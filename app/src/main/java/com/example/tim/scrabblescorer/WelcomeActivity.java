@@ -13,6 +13,7 @@ import android.widget.Toast;
 public class WelcomeActivity extends AppCompatActivity {
 
     int numberOfPlayers;
+    String testing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
