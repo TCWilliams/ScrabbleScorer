@@ -1,47 +1,66 @@
 package com.example.tim.scrabblescorer;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class WelcomeActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+import android.widget.AdapterView.OnItemSelectedListener;
+
+
+public class WelcomeActivity extends Activity implements OnItemSelectedListener {
 
     int numberOfPlayers;
-    String testing;
+    Spinner numberPlayersSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
+        numberPlayersSpinner = ((Spinner) findViewById(R.id.selectNumberSpinner));
+        numberPlayersSpinner.setOnItemSelectedListener(this);
+
+        List<String> numbers = new ArrayList<>();
+        numbers.add("2");
+        numbers.add("3");
+        numbers.add("4");
+        numbers.add("5");
+        numbers.add("6");
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, numbers);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        numberPlayersSpinner.setAdapter(dataAdapter);
 
     }
 
-    public void setNumberPlayers(View v) {
-        EditText numberPlayersEditText = ((EditText) findViewById(R.id.editText_num_players));
+    public void goToNamesActivity(View v) {
+        Intent numPlayersIntent = new Intent(WelcomeActivity.this, EnterPlayersActivity.class);
+        numPlayersIntent.putExtra("NUM_PLAYERS", numberOfPlayers);
+        startActivity(numPlayersIntent);
+    }
 
 
-        try {
-            //create intent to store number of players and start enter players activity
-            numberOfPlayers = Integer.parseInt(numberPlayersEditText.getText().toString());
-            if (numberOfPlayers > 1 && numberOfPlayers < 7) {
-                Intent numPlayersIntent = new Intent(WelcomeActivity.this, EnterPlayersActivity.class);
-                numPlayersIntent.putExtra("NUM_PLAYERS", numberOfPlayers);
-                startActivity(numPlayersIntent);
-                finish();
-            } else {
-                Toast.makeText(this.getBaseContext(), "enter a number 2 - 6", Toast.LENGTH_LONG).show();
-                numberPlayersEditText.setText("");
-            }
-            Log.i("", numberOfPlayers + "is a number");
-        } catch (NumberFormatException e) {
-            Log.i("", 0 + "is not a number");
-        }
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        numberOfPlayers = Integer.parseInt(parent.getItemAtPosition(position).toString());
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
+

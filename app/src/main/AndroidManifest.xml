@@ -15,10 +15,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EnterPlayersActivity" />
-        <activity android:name=".ScoringActivity"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
+        <activity
+            android:name=".EnterPlayersActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ScoringActivity"
+            android:windowSoftInputMode="adjustResize"></activity>
     </application>
+
 </manifest>
