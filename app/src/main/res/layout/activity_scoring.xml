@@ -18,6 +18,7 @@
         android:id="@+id/namesLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
         android:orientation="horizontal">
 
     </LinearLayout>
@@ -56,31 +57,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/allScoresLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/scoresLinearLayout"
+        android:layout_height="300dp"
         android:layout_below="@id/namesLinearLayout"
-        android:fillViewport="true"
-        android:paddingBottom="50dp">
+        android:orientation="horizontal">
 
     </LinearLayout>
-
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
-
-        <LinearLayout
-            android:id="@+id/allScoresLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/namesLinearLayout"
-            android:orientation="horizontal">
-
-        </LinearLayout>
-
-    </ScrollView>
-
 
 </RelativeLayout>

@@ -20,7 +20,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ScoringActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
+           ></activity>
     </application>
 
 </manifest>

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -24,15 +25,15 @@ import java.util.List;
 
 public class ScoringActivity extends AppCompatActivity {
 
-    String receivedNames[];
-    int numberOfPlayers;
-    TextView[] namesArrayTextView;
+    String receivedNames[]; // stores names from previous activity
+    int numberOfPlayers;        // size of receivedNames
+    TextView[] namesArrayTextView;      // to display names
     TextView[] currentScoresTextViews; // to display current scores
 
     int currentPlayerNumber = 0;  //starts at player 1 (0)
     String currentPlayerName;
 
-    ArrayAdapter<Integer>[] arrayAdapters;
+    ArrayAdapter<Integer>[] arrayAdapters; // for ListViews to display scores
     ListView[] playerAllScoresListViews;
     int[] currentScores;
     List<List<Integer>> pastScores; // 2d List for keeping track of scores
@@ -57,11 +58,13 @@ public class ScoringActivity extends AppCompatActivity {
         LinearLayout allScoresLayout = (LinearLayout) findViewById(R.id.allScoresLinearLayout);
 
         currentScores = new int[numberOfPlayers];
-        pastScores = new ArrayList();
+        pastScores = new ArrayList();  // List of ArrayLists
         arrayAdapters = new ArrayAdapter[numberOfPlayers];
 
 
         for (int i = 0; i < numberOfPlayers; i++) {
+
+            // Player names
             TextView nameTextView = new TextView(this);
             nameTextView.setText(receivedNames[i]);
             nameTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -72,6 +75,7 @@ public class ScoringActivity extends AppCompatActivity {
             namesLayout.addView(nameTextView);
             namesArrayTextView[i] = nameTextView;  // store to use later
 
+            // create TextViews for each player total score
             TextView scoreTextView = new TextView(this);
             scoreTextView.setText("0");
             scoreTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -83,35 +87,41 @@ public class ScoringActivity extends AppCompatActivity {
             scoresLayout.addView(scoreTextView);
             currentScoresTextViews[i] = scoreTextView; // store to use later
 
-            ListView allScoresListView = new ListView(this);
+            // create ListView for each player for ongoing scores
+            final ListView allScoresListView = new ListView(this);
             allScoresListView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
             allScoresLayout.setWeightSum(numberOfPlayers);
             allScoresLayout.addView(allScoresListView);
+
+            //?????????????????????????????//
             playerAllScoresListViews[i] = allScoresListView;
 
-            pastScores.add(new ArrayList<Integer>());
+
+            pastScores.add(new ArrayList<Integer>()); // add List to each player for scores
             currentScores[i] = 0; // initialise all player scores to 0
 
+            // create Adapter for each player and store ListView in it to show scores
             ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this, R.layout.activity_listview, pastScores.get(i));
             arrayAdapters[i] = adapter;
-
             allScoresListView.setAdapter(adapter);
 
             scrollView = (ScrollView) findViewById(R.id.scrollView);
-
             // for entering new score
             editTextScore = (EditText) findViewById(R.id.editTextNewScore);
             editTextScore.setOnKeyListener(new View.OnKeyListener() {
+
+
+                // set soft-input to update score when click enter
                 @Override
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                        // int newScore = Integer.parseInt(editTextScore.getText().toString());
                         updateScore(editTextScore);
                         return true;
                     }
                     return false;
                 }
             });
+            // set soft-input to update score when user clicks outside keyboard
             editTextScore.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
@@ -131,16 +141,16 @@ public class ScoringActivity extends AppCompatActivity {
             // update the current players score - add new score to total
             int newScore = Integer.parseInt(editTextScore.getText().toString());
             currentScores[currentPlayerNumber] += newScore; // update players score in array
-
             pastScores.get(currentPlayerNumber).add(newScore); // adds latest score to list of all scores
 
-            // playerAllScoresListViews[currentPlayerNumber].append("\n" + String.valueOf(newScore));
             playerAllScoresListViews[currentPlayerNumber].setAdapter(arrayAdapters[currentPlayerNumber]);
+            scrollDown(playerAllScoresListViews[currentPlayerNumber]);
+            currentScoresTextViews[currentPlayerNumber].setText(String.valueOf(currentScores[currentPlayerNumber])); // update players current score
 
-            currentScoresTextViews[currentPlayerNumber].setText(String.valueOf(currentScores[currentPlayerNumber])); // update players current score in
-            scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+
             setCurrentPlayer(currentPlayerNumber + 1); // set player to next in turn
             editTextScore.setText("");
+
             Log.i("", newScore + "is a number");
         } catch (NumberFormatException e) {
             Log.i("", 0 + "is not a number");
@@ -157,6 +167,7 @@ public class ScoringActivity extends AppCompatActivity {
         currentPlayerName = namesArrayTextView[currentPlayerNumber].getText().toString();
         namesArrayTextView[currentPlayerNumber].setTextColor(Color.YELLOW);
         currentScoresTextViews[currentPlayerNumber].setTextColor(Color.YELLOW);
+
 
         //  Toast toast = Toast.makeText(this.getBaseContext(), currentPlayerName + "'s turn!", Toast.LENGTH_LONG);
         //   toast.setGravity(Gravity.CENTER, 0, 0);
@@ -186,4 +197,15 @@ public class ScoringActivity extends AppCompatActivity {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
+    public void scrollDown(View v) {
+        playerAllScoresListViews[currentPlayerNumber].post(new Runnable() {
+
+            public void run() {
+                playerAllScoresListViews[currentPlayerNumber].setSelection(playerAllScoresListViews[currentPlayerNumber].getCount() - 1);
+            }
+        });
+
+    }
 }
+
