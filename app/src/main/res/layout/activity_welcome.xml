@@ -21,21 +21,23 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:paddingTop="30dp"
-            android:text="Welcome Bidwillites"
+            android:textSize="30dp"
+            android:text="@string/welcome_message"
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textStyle="bold"
-            android:typeface="monospace" />
+            android:typeface="serif" />
 
         <TextView
             android:id="@+id/textView_num_players"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="130dp"
-            android:text="Select number of players"
+            android:textSize="25dp"
+            android:text="@string/select_number_spinner"
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:typeface="monospace" />
+            android:typeface="serif" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,7 +51,8 @@
                 android:id="@+id/selectNumberSpinner"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:spinnerMode="dropdown" />
+                android:spinnerMode="dropdown"
+                android:entries="@array/number_players_array"/>
 
         </LinearLayout>
 
@@ -59,8 +62,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:onClick="goToNamesActivity"
-            android:text="Go"
-            android:background="#3f51b4" />
+            android:text="@string/go_button"
+            android:background="#3f51b4"
+            android:typeface="serif" />
 
 
     </LinearLayout>

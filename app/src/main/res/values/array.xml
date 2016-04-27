@@ -1,0 +1,19 @@
+ <resources>
+     <!-- welcome activity -->
+    <string-array name="number_players_array">
+        <item>"2"</item>
+        <item>"3"</item>
+        <item>"4"</item>
+        <item>"5"</item>
+        <item>"6"</item>
+    </string-array>
+     <!-- enter names activity -->
+     <string-array name="player_name_hints">
+         <item>"player 1</item>
+         <item>"player 2</item>
+         <item>"player 3</item>
+         <item>"player 4</item>
+         <item>"player 5</item>
+         <item>"player 6</item>
+     </string-array>
+</resources>

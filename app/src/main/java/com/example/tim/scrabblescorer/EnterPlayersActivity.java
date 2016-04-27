@@ -22,16 +22,24 @@ public class EnterPlayersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_players);
 
+        getIntentExtras();
+        setupNameTextEdits();
+    }
+
+    public void getIntentExtras() {
         Intent caller = getIntent();
         numberOfPlayers = caller.getIntExtra("NUM_PLAYERS", 0);
+    }
 
+    // create numberOfPlayers EditTexts for player name entry
+    public void setupNameTextEdits() {
         nameEditTexts = new EditText[numberOfPlayers];
-
         LinearLayout namesLayout = (LinearLayout) findViewById(R.id.linearLayoutNames);
+        String[] nameHints = getResources().getStringArray(R.array.player_name_hints);
 
         for (int i = 0; i < numberOfPlayers; i++) {
             EditText nameEditText = new EditText(this);
-            nameEditText.setHint(String.format("player %d", i + 1));
+            nameEditText.setHint(nameHints[i]);
             namesLayout.addView(nameEditText);
             nameEditTexts[i] = nameEditText;
         }

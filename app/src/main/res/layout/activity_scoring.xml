@@ -30,8 +30,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:onClick="undoLastScore"
-        android:text="undo"
-        android:typeface="monospace" />
+        android:text="@string/undo_button"
+        android:typeface="serif" />
 
     <EditText
         android:id="@+id/editTextNewScore"
@@ -43,7 +43,7 @@
         android:ems="10"
         android:inputType="number"
         android:textAlignment="center"
-        android:typeface="monospace" />
+        android:typeface="serif" />
 
 
     <LinearLayout
