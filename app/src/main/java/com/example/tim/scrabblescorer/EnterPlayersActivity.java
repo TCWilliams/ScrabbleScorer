@@ -40,6 +40,8 @@ public class EnterPlayersActivity extends AppCompatActivity {
         for (int i = 0; i < numberOfPlayers; i++) {
             EditText nameEditText = new EditText(this);
             nameEditText.setHint(nameHints[i]);
+            nameEditText.setTextColor(getResources().getColor(R.color.text_colour));
+            nameEditText.setSingleLine(true);
             namesLayout.addView(nameEditText);
             nameEditTexts[i] = nameEditText;
         }

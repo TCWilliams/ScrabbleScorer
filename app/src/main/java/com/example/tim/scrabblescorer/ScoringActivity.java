@@ -1,27 +1,41 @@
 package com.example.tim.scrabblescorer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.net.Uri;
+import android.os.Bundle;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.os.Handler;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScoringActivity extends AppCompatActivity {
+public class ScoringActivity extends Activity implements SensorEventListener {
 
     String receivedNames[]; // stores names from previous activity
     int numberOfPlayers;        // size of receivedNames
@@ -36,6 +50,15 @@ public class ScoringActivity extends AppCompatActivity {
     int[] currentScores;
     List<List<Integer>> pastScores; // 2d List for keeping track of scores
     EditText editTextScore;
+    Button backToResultsButton;
+
+    // sensor stuff for BoardShake accelerometer
+    private SensorManager senSensorManager;
+    private Sensor senAcceleromter;
+
+    private long lastUpdate = 0;
+    private float last_x, last_y, last_z;
+    private static final int SHAKE_THRESHOLD = 4000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +72,8 @@ public class ScoringActivity extends AppCompatActivity {
         setAllScoreListViews();
         setAddScoreEditText();
         setCurrentPlayer(currentPlayerNumber);
+        setUpAccelerometer();
     }
-
 
     // gets list of names and sets number of players
     public void getIntentExtras() {
@@ -70,6 +93,7 @@ public class ScoringActivity extends AppCompatActivity {
             nameTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
             nameTextView.setGravity(Gravity.CENTER);
             nameTextView.setTypeface(Typeface.SERIF, Typeface.BOLD);
+            nameTextView.setTextColor(getResources().getColor(R.color.text_colour));
             nameTextView.setTextSize(25 - (numberOfPlayers * 2));
             namesLayout.setWeightSum(numberOfPlayers);
             namesLayout.addView(nameTextView);
@@ -90,6 +114,7 @@ public class ScoringActivity extends AppCompatActivity {
             // set text properties
             scoreTextView.setTextSize(25 - (numberOfPlayers * 2));
             scoreTextView.setTypeface(Typeface.SERIF, Typeface.BOLD);
+            scoreTextView.setTextColor(getResources().getColor(R.color.text_colour));
             scoresLayout.setWeightSum(numberOfPlayers);
             scoresLayout.addView(scoreTextView);
             currentScoresTextViews[i] = scoreTextView; // store to use later
@@ -104,7 +129,6 @@ public class ScoringActivity extends AppCompatActivity {
 
         pastScores = new ArrayList();  // List of ArrayLists
         arrayAdapters = new ArrayAdapter[numberOfPlayers];
-
 
         for (int i = 0; i < numberOfPlayers; i++) {
             // create ListView for each player for ongoing scores
@@ -160,7 +184,6 @@ public class ScoringActivity extends AppCompatActivity {
             scrollDown(playerAllScoresListViews[currentPlayerNumber]);
             currentScoresTextViews[currentPlayerNumber].setText(String.valueOf(currentScores[currentPlayerNumber])); // update players current score
 
-
             setCurrentPlayer(currentPlayerNumber + 1); // set player to next in turn
             editTextScore.setText(R.string.clear_edit_text);
 
@@ -172,8 +195,8 @@ public class ScoringActivity extends AppCompatActivity {
 
     // sets the current player to the argument passed - nextPlayer, changes text colours appropriately
     public void setCurrentPlayer(int nextPlayer) {
-        namesArrayTextView[currentPlayerNumber].setTextColor(Color.BLACK);
-        currentScoresTextViews[currentPlayerNumber].setTextColor(Color.BLACK);
+        namesArrayTextView[currentPlayerNumber].setTextColor(getResources().getColor(R.color.text_colour));
+        currentScoresTextViews[currentPlayerNumber].setTextColor(getResources().getColor(R.color.text_colour));
 
         if (nextPlayer < numberOfPlayers) currentPlayerNumber = nextPlayer;
         else currentPlayerNumber = 0; // restart at player 1
@@ -181,6 +204,14 @@ public class ScoringActivity extends AppCompatActivity {
         currentPlayerName = namesArrayTextView[currentPlayerNumber].getText().toString();
         namesArrayTextView[currentPlayerNumber].setTextColor(Color.YELLOW);
         currentScoresTextViews[currentPlayerNumber].setTextColor(Color.YELLOW);
+    }
+
+    public void openDictionary(View v) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse("http://scrabblewordfinder.org/dictionary-checker"));
+        startActivity(intent);
     }
 
     // removes the last score added and sets current player back one. Keeps going back to game start
@@ -199,8 +230,79 @@ public class ScoringActivity extends AppCompatActivity {
             pastScores.get(currentPlayerNumber).remove(pastScores.get(currentPlayerNumber).size() - 1);
             // update listView
             playerAllScoresListViews[currentPlayerNumber].setAdapter(arrayAdapters[currentPlayerNumber]);
-
         }
+    }
+
+    // finish scoring and go to results activity
+    public void finishGame(View v) {
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle("Confirm");
+            builder.setMessage("Are you really finished?");
+
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    goToResults();
+                    setUpPostGameScreen();
+
+                    dialog.dismiss();
+                }
+
+            });
+
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // Do nothing
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    public void goToResults(){
+
+        Intent goToResults = new Intent(ScoringActivity.this, GameResultsActivity.class);
+        goToResults.putExtra("SCORES", currentScores);
+        goToResults.putExtra("NAMES", receivedNames);
+
+        startActivity(goToResults);
+
+    }
+
+    // removes game play views and replaces with a 'back to results' button
+    public void setUpPostGameScreen() {
+        backToResultsButton = new Button(this); // button to display after game finish
+        backToResultsButton.setTextColor(getResources().getColor(R.color.text_colour));
+        backToResultsButton.setBackgroundColor(getResources().getColor(R.color.button_colour));
+        // delay for 1 second so user does not see the buttons disappear
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                LinearLayout buttonLayout = (LinearLayout) findViewById(R.id.buttonRowLinearLayout);
+                buttonLayout.removeAllViews();
+                editTextScore.setVisibility(View.GONE);
+                namesArrayTextView[currentPlayerNumber].setTextColor(getResources().getColor(R.color.text_colour));
+                currentScoresTextViews[currentPlayerNumber].setTextColor(getResources().getColor(R.color.text_colour));
+                backToResultsButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+                backToResultsButton.setText(R.string.back_to_results);
+                buttonLayout.setGravity(Gravity.CENTER);
+                buttonLayout.addView(backToResultsButton);
+
+                backToResultsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        goToResults(); // better way to do this??
+                    }
+                });
+            }
+        }, 1000);
+
     }
 
     // helper methods for keyboard and scrolling
@@ -218,5 +320,54 @@ public class ScoringActivity extends AppCompatActivity {
         });
 
     }
+
+    public void setUpAccelerometer() {
+        senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        senAcceleromter = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        senSensorManager.registerListener(this, senAcceleromter, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    // watch accelerometer to see if someone has shaken the scrabble board
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Sensor mySensor = sensorEvent.sensor;
+        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            float z = sensorEvent.values[2];
+
+            long curTime = System.currentTimeMillis();
+
+            if ((curTime - lastUpdate) > 100) {
+                long diffTime = (curTime - lastUpdate);
+                lastUpdate = curTime;
+                float speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
+
+                if (speed > SHAKE_THRESHOLD) {
+                    Intent goToBoardShake = new Intent(ScoringActivity.this, BoardShakeActivity.class);
+                    startActivity(goToBoardShake);
+                }
+                last_x = x;
+                last_y = y;
+                last_z = z;
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    protected void onPause() {
+        super.onPause();
+        senSensorManager.unregisterListener(this);
+    }
+
+    protected void onResume() {
+        super.onResume();
+        senSensorManager.registerListener(this, senAcceleromter, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
 }
 

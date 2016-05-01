@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Scrabble Scorer</string>
     <!-- Welcome activity -->
-    <string name="welcome_message">Welcome this scrabble thing</string>
+    <string name="welcome_message">Scrabble Scorer</string>
     <string name="select_number_spinner">Select number of players</string>
     <string name="go_button">go</string>
 
@@ -10,8 +10,21 @@
     <string name="done_button">done</string>
 
     <!-- scoring activity -->
-    <string name="undo_button">undo</string>
     <string name="initialise_scores_0">0</string>
     <string name="clear_edit_text"></string>
+    <string name="undo_button">undo</string>
+    <string name="open_dictionary_button">dictionary</string>
+    <string name="finish_game_button">finish</string>
     <string name="toast_nothing_to_undo">nothing to undo</string>
+    <string name="back_to_results">back to results</string>
+
+    <!-- results activity -->
+    <string name="winner_name">The winner is... \n</string>
+    <string name="back_to_scores">back to scores</string>
+    <string name="show_best_scores">best scores</string>
+    <string name="show_average_scores">average scores</string>
+    <string name="draw_message">It\'s a draw</string>
+    <string name="no_scores">nobody scored</string>
+    <!-- board shake activity -->
+    <string name="boardshake_message">Dickhead</string>
 </resources>

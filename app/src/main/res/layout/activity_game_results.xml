@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient"
+    tools:context=".GameResultsActivity">
+
+    <LinearLayout
+        android:id="@+id/winnerNameLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/winnerNameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/winner_name"
+            android:textAlignment="center"
+            android:textSize="35dp"
+            android:textStyle="bold"
+            android:textColor="@color/text_colour"
+            android:typeface="serif" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentBottom="true"
+        android:weightSum="3"
+        android:id="@+id/buttonRowlinearLayout">
+
+        <Button
+            android:id="@+id/backToResultsButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/button_colour"
+            android:text="@string/back_to_scores"
+            android:textColor="@color/text_colour"
+            android:onClick="goBackToScores" />
+
+        <Button
+            android:id="@+id/showAverageScoresButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/button_colour"
+            android:text="@string/show_average_scores"
+            android:textColor="@color/text_colour"/>
+
+        <Button
+            android:id="@+id/showBestScoresButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/button_colour"
+            android:textColor="@color/text_colour"
+            android:text="@string/show_best_scores"/>
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>
