@@ -19,9 +19,11 @@ Activity
   
   4) results page - displays results
   
-     go back to view game scores (with changes to the scoring activity so that scores can not be altered, and button row replaced by go back to results button
+     go back to view game scores (with changes to the scoring activity so that scores can not be altered, 
+     and button row replaced by go back to results button
   
-  5) board shake activity - game killed when device is shaken during play. Displays a message yet to be decided. Should be crude but     not too crude.
+  5) board shake activity - game killed when device is shaken during play. 
+    Displays a message yet to be decided. Should be crude but not too crude.
   
   TODO: I want to add a web component to keep track of games over time
   
